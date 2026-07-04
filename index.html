@@ -197,9 +197,9 @@ table.tbl tr.qual td{border-left:3px solid var(--ok)}
 .fx.human{border-color:rgba(255,207,92,.5)}
 .fx .sc .pen{font-family:var(--cond);font-size:12px;color:var(--dim);display:block}
 .news{border-left:3px solid var(--gold);padding:8px 12px;color:var(--dim);margin:6px 0;font-size:16px}
-.bracket{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;overflow-x:auto}
+.bracket{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));gap:12px;overflow-x:auto}
 .bracket h4{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
-.bk-col{min-width:190px;display:flex;flex-direction:column;gap:10px;justify-content:space-around}
+.bk-col{min-width:150px;display:flex;flex-direction:column;gap:8px;justify-content:space-around}
 
 /* ---------- match screen ---------- */
 #screen-match{padding:0;overflow:hidden;background:#07200f}
@@ -1344,6 +1344,10 @@ function nearestCountry(fromC, exclude){
   return best || choice(COUNTRIES.filter(c=>!exclude.has(c.n))) || choice(COUNTRIES);
 }
 
+const GROUP_LETTERS='ABCDEFGHIJKL';   /* 12 groups (48-team format) */
+const NGROUPS=12, CUP_SLOTS=48;
+/* standard single-elimination bracket seed order (1-indexed) */
+function seedOrder(n){ let s=[1,2]; while(s.length<n){ const m=s.length*2+1, t=[]; s.forEach(x=>{ t.push(x, m-x); }); s=t; } return s; }
 function buildCup(){
   const adj = DIFF_ADJ[CAREER.diff];
   const usedNames = new Set();
@@ -1351,7 +1355,7 @@ function buildCup(){
   /* pick bot nations for the remaining cup slots — strongest first with a shake */
   const pool = COUNTRIES.filter(c=>!usedNames.has(c.n))
     .map(c=>({c, s:c.r + rand(-6,6)})).sort((a,b)=>b.s-a.s);
-  const slots = Math.max(0, 32 - CAREER.humans.length);
+  const slots = Math.max(0, CUP_SLOTS - CAREER.humans.length);
   const botCs = pool.slice(0, slots).map(o=>o.c);
   const leftovers = pool.slice(slots).map(o=>o.c);
   const drift = (CAREER.season-1)*2; /* bot nations train between World Cups */
@@ -1370,10 +1374,10 @@ function buildCup(){
   const cupIds = Object.values(CAREER.teams).filter(t=>t.cup).map(t=>t.id);
   const humanIds = CAREER.humans.map(h=>h.teamId);
   const botIds = shuffle(cupIds.filter(id=>!humanIds.includes(id)));
-  const groups = [[],[],[],[],[],[],[],[]];
-  humanIds.forEach((id,i)=> groups[i%8].push(id));
+  const groups = Array.from({length:NGROUPS},()=>[]);
+  humanIds.forEach((id,i)=> groups[i%NGROUPS].push(id));
   let gi=0;
-  botIds.forEach(id=>{ while(groups[gi%8].length>=4) gi++; groups[gi%8].push(id); gi++; });
+  botIds.forEach(id=>{ while(groups[gi%NGROUPS].length>=4) gi++; groups[gi%NGROUPS].push(id); gi++; });
   CAREER.groups = groups.map(g=>shuffle(g));
   CAREER.table = {};
   cupIds.forEach(id=> CAREER.table[id]={P:0,W:0,D:0,L:0,GF:0,GA:0,Pts:0});
@@ -1385,7 +1389,7 @@ function buildCup(){
       CAREER.gfx.push({grp, md, home:h, away:aw, played:false, gh:0, ga:0}));
   });
   CAREER.groupMD = 1;
-  CAREER.ko = {r16:[], qf:[], sf:[], f:[]};
+  CAREER.ko = {r32:[], r16:[], qf:[], sf:[], f:[]};
   CAREER.stage = 'qualifier';
   CAREER.champion = null;
   CAREER.news = [`The ${CAREER.year} World Cup draw is complete. ${CAREER.humans.map(h=>CAREER.teams[h.teamId].name).join(', ')} must first survive qualification.`];
@@ -1399,7 +1403,7 @@ function startCareerFromSetup(){
     humans: SETUP.humans.map(h=>({ name:h.name, teamId:h.teamId, out:false, run:'',
       stats:{goals:0,wins:0,matches:0,cups:0,finals:0,seasons:0} })),
     teams: {}, qualifiers:[], groups:[], table:{}, gfx:[], groupMD:1,
-    ko:{r16:[],qf:[],sf:[],f:[]}, stage:'qualifier', champion:null, news:[]
+    ko:{r32:[],r16:[],qf:[],sf:[],f:[]}, stage:'qualifier', champion:null, news:[]
   };
   SETUP.humans.forEach(h=>{ CAREER.teams[h.teamId] = h.team; });
   buildCup();
@@ -1445,7 +1449,7 @@ function advanceCareer(){
     const todays = CAREER.gfx.filter(f=>f.md===md && !f.played);
     todays.forEach(fx=>{
       const hHome = isHumanTeam(fx.home), hAway = isHumanTeam(fx.away);
-      if(hHome || hAway) PENDQ.push({ type:'group', comp:`Group ${'ABCDEFGH'[fx.grp]} · Matchday ${md}`, home:fx.home, away:fx.away, fx });
+      if(hHome || hAway) PENDQ.push({ type:'group', comp:`Group ${GROUP_LETTERS[fx.grp]} · Matchday ${md}`, home:fx.home, away:fx.away, fx });
       else { const [g1,g2] = simScore(teamRating(CAREER.teams[fx.home]), teamRating(CAREER.teams[fx.away]));
         fx.gh=g1; fx.ga=g2; fx.played=true; applyGroupResult(fx); }
     });
@@ -1456,9 +1460,9 @@ function advanceCareer(){
     };
     runQueue();
   }
-  else if(st==='ko16' || st==='ko8' || st==='ko4' || st==='ko2'){
-    const key = {ko16:'r16', ko8:'qf', ko4:'sf', ko2:'f'}[st];
-    const label = {ko16:'Round of 16', ko8:'Quarter-final', ko4:'Semi-final', ko2:'World Cup Final'}[st];
+  else if(st==='ko32' || st==='ko16' || st==='ko8' || st==='ko4' || st==='ko2'){
+    const key = {ko32:'r32', ko16:'r16', ko8:'qf', ko4:'sf', ko2:'f'}[st];
+    const label = {ko32:'Round of 32', ko16:'Round of 16', ko8:'Quarter-final', ko4:'Semi-final', ko2:'World Cup Final'}[st];
     CAREER.ko[key].forEach(m=>{
       if(m.played) return;
       const hHome = isHumanTeam(m.home), hAway = isHumanTeam(m.away);
@@ -1511,33 +1515,43 @@ function finishQualifiers(){
 }
 
 function closeGroups(){
-  CAREER.ko.r16 = [];
-  const W=[],R=[];
-  CAREER.groups.forEach(g=>{ const o=groupOrder(g); W.push(o[0]); R.push(o[1]); });
-  const pairs = [[0,1],[2,3],[4,5],[6,7],[1,0],[3,2],[5,4],[7,6]];
-  pairs.forEach(([w,r])=> CAREER.ko.r16.push({home:W[w], away:R[r], played:false, gh:0,ga:0, pens:null}));
+  CAREER.ko.r32 = [];
+  const winners=[], runners=[], thirds=[];
+  CAREER.groups.forEach(g=>{ const o=groupOrder(g); if(o[0])winners.push(o[0]); if(o[1])runners.push(o[1]); if(o[2])thirds.push(o[2]); });
+  /* the 8 best third-placed teams also go through (2026 format) */
+  const rankT=(a,b)=>{ const A=CAREER.table[a],B=CAREER.table[b]; return B.Pts-A.Pts || (B.GF-B.GA)-(A.GF-A.GA) || B.GF-A.GF; };
+  const bestThirds = thirds.sort(rankT).slice(0,8);
+  /* seed the 32 qualifiers: group winners, then runners-up, then best thirds — each by squad strength */
+  const byR=(a,b)=>teamRating(CAREER.teams[b])-teamRating(CAREER.teams[a]);
+  const seeded = winners.sort(byR).concat(runners.sort(byR)).concat(bestThirds.sort(byR));
+  const order=seedOrder(32);
+  for(let i=0;i<32 && i+1<order.length;i+=2){
+    const a=seeded[order[i]-1], b=seeded[order[i+1]-1];
+    if(a==null||b==null) continue;
+    CAREER.ko.r32.push({home:a, away:b, played:false, gh:0,ga:0, pens:null});
+  }
   CAREER.humans.forEach(h=>{
     if(h.out) return;
-    const alive = CAREER.ko.r16.some(m=>m.home===h.teamId||m.away===h.teamId);
+    const alive = CAREER.ko.r32.some(m=>m.home===h.teamId||m.away===h.teamId);
     if(!alive){ h.out=true; h.run='Group stage exit'; CAREER.news.unshift(`${teamName(h.teamId)} are out at the group stage.`); }
-    else h.run='Round of 16';
+    else h.run='Round of 32';
   });
-  CAREER.stage='ko16';
-  CAREER.news.unshift('The groups are done — the knockout bracket is set.');
+  CAREER.stage='ko32';
+  CAREER.news.unshift('The groups are done — the Round of 32 is set.');
 }
 
 function closeKORound(key){
-  const next = {r16:'qf', qf:'sf', sf:'f'}[key];
+  const next = {r32:'r16', r16:'qf', qf:'sf', sf:'f'}[key];
   const winners = CAREER.ko[key].map(koWinner);
   CAREER.humans.forEach(h=>{
     if(h.out) return;
     if(!winners.includes(h.teamId)){
       h.out=true;
-      h.run = {r16:'Round of 16 exit', qf:'Quarter-final exit', sf:'Semi-final exit', f:'Runners-up'}[key];
+      h.run = {r32:'Round of 32 exit', r16:'Round of 16 exit', qf:'Quarter-final exit', sf:'Semi-final exit', f:'Runners-up'}[key];
       if(key==='f') h.stats.finals++;
       CAREER.news.unshift(`${teamName(h.teamId)} bow out — ${h.run}.`);
     } else {
-      h.run = {r16:'Quarter-finals', qf:'Semi-finals', sf:'World Cup Final', f:'CHAMPIONS'}[key];
+      h.run = {r32:'Round of 16', r16:'Quarter-finals', qf:'Semi-finals', sf:'World Cup Final', f:'CHAMPIONS'}[key];
     }
   });
   if(key==='f'){
@@ -1552,7 +1566,7 @@ function closeKORound(key){
   }
   for(let i=0;i<winners.length;i+=2)
     CAREER.ko[next].push({home:winners[i], away:winners[i+1], played:false, gh:0,ga:0, pens:null});
-  CAREER.stage = {r16:'ko8', qf:'ko4', sf:'ko2'}[key];
+  CAREER.stage = {r32:'ko16', r16:'ko8', qf:'ko4', sf:'ko2'}[key];
   saveCareer(); renderHub();
 }
 function humanOfAny(id){ return CAREER.humans.findIndex(h=>h.teamId===id); }
@@ -1682,7 +1696,7 @@ function updateBoard(){
   });
   DB.set('board', board);
 }
-const RUN_RANK = ['','Did not qualify','Group stage exit','Round of 16 exit','Quarter-final exit','Semi-final exit','Runners-up','CHAMPIONS'];
+const RUN_RANK = ['','Did not qualify','Group stage exit','Round of 32 exit','Round of 16 exit','Quarter-final exit','Semi-final exit','Runners-up','CHAMPIONS'];
 function bestRun(a,b){ return RUN_RANK.indexOf(b)>RUN_RANK.indexOf(a) ? b : a; }
 
 /* ================================================================
@@ -1928,7 +1942,7 @@ function pcardHTML(p, o={}){
 /* ================================================================
    8. HUB
 ================================================================ */
-const STAGE_LABEL = {qualifier:'Qualification play-off', groups:'Group stage', ko16:'Round of 16',
+const STAGE_LABEL = {qualifier:'Qualification play-off', groups:'Group stage', ko32:'Round of 32', ko16:'Round of 16',
   ko8:'Quarter-finals', ko4:'Semi-finals', ko2:'World Cup Final', ended:'Tournament complete'};
 function isHumanTeamAny(id){ return CAREER && CAREER.humans.some(h=>h.teamId===id); }
 
@@ -1951,7 +1965,7 @@ function renderHub(){
 function gateHubTabs(){
   const stage=CAREER.stage;
   const showGroups  = stage!=='qualifier' && CAREER.groups && CAREER.groups.length>0;
-  const showBracket = ['ko16','ko8','ko4','ko2','ended'].includes(stage) && CAREER.ko && CAREER.ko.r16 && CAREER.ko.r16.length;
+  const showBracket = ['ko32','ko16','ko8','ko4','ko2','ended'].includes(stage) && CAREER.ko && CAREER.ko.r32 && CAREER.ko.r32.length;
   const setTab=(name,show)=>{
     const btn=$('hub-tabs').querySelector(`button[data-tab="${name}"]`);
     if(btn) btn.style.display = show ? '' : 'none';
@@ -1990,9 +2004,9 @@ function nextFixtureHTML(h){
     if(q){ opp=q.oppId; tag='Win or stay home'; }
   } else if(st==='groups'){
     const fx=CAREER.gfx.find(f=>f.md===CAREER.groupMD && !f.played && (f.home===h.teamId||f.away===h.teamId));
-    if(fx){ opp = fx.home===h.teamId?fx.away:fx.home; tag=`Group ${'ABCDEFGH'[fx.grp]} · MD${fx.md}`; }
+    if(fx){ opp = fx.home===h.teamId?fx.away:fx.home; tag=`Group ${GROUP_LETTERS[fx.grp]} · MD${fx.md}`; }
   } else {
-    const key={ko16:'r16',ko8:'qf',ko4:'sf',ko2:'f'}[st];
+    const key={ko32:'r32',ko16:'r16',ko8:'qf',ko4:'sf',ko2:'f'}[st];
     if(key){
       const m=CAREER.ko[key].find(m=>!m.played && (m.home===h.teamId||m.away===h.teamId));
       if(m){ opp = m.home===h.teamId?m.away:m.home; tag=STAGE_LABEL[st]; }
@@ -2007,7 +2021,7 @@ function renderGroups(){
   if(!CAREER.groups.length){ el.innerHTML=''; return; }
   let html='<div class="grid g2">';
   CAREER.groups.forEach((g,i)=>{
-    html+=`<div class="panel"><h3 class="eyebrow" style="margin-bottom:8px">Group ${'ABCDEFGH'[i]}</h3>
+    html+=`<div class="panel"><h3 class="eyebrow" style="margin-bottom:8px">Group ${GROUP_LETTERS[i]}</h3>
     <table class="tbl"><thead><tr><th style="text-align:left">Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead><tbody>`;
     groupOrder(g).forEach((id,pos)=>{
       const T=CAREER.table[id], t=CAREER.teams[id];
@@ -2018,7 +2032,7 @@ function renderGroups(){
     });
     html+='</tbody></table></div>';
   });
-  html+='</div><p class="sub mt">Top two in each group (green edge) reach the Round of 16. Gold rows are local players.</p>';
+  html+='</div><p class="sub mt">Top two in each group (green edge) reach the Round of 32, along with the eight best third-placed teams. Gold rows are local players.</p>';
   el.innerHTML=html;
 }
 function bkMatch(m){
@@ -2031,7 +2045,7 @@ function bkMatch(m){
 }
 function renderBracket(){
   const el=$('tab-bracket');
-  if(!CAREER.ko.r16.length){ el.innerHTML='<p class="sub">The knockout bracket appears once the group stage finishes.</p>'; return; }
+  if(!CAREER.ko.r32 || !CAREER.ko.r32.length){ el.innerHTML='<p class="sub">The knockout bracket appears once the group stage finishes.</p>'; return; }
   const col=(title,list,slots)=>{
     let s=`<div class="bk-col"><h4>${title}</h4>`;
     if(!list.length) for(let i=0;i<slots;i++) s+=`<div class="fx"><span class="sub">TBD</span></div>`;
@@ -2040,7 +2054,7 @@ function renderBracket(){
   };
   let champ='';
   if(CAREER.champion) champ = `<div class="ticket mt" style="text-align:center;font-size:20px">🏆 <b>${esc(teamName(CAREER.champion))}</b> — ${CAREER.year} World Champions</div>`;
-  el.innerHTML = `<div class="bracket">${col('Round of 16',CAREER.ko.r16,8)}${col('Quarter-finals',CAREER.ko.qf,4)}${col('Semi-finals',CAREER.ko.sf,2)}${col('Final',CAREER.ko.f,1)}</div>${champ}`;
+  el.innerHTML = `<div class="bracket">${col('Round of 32',CAREER.ko.r32,16)}${col('Round of 16',CAREER.ko.r16,8)}${col('Quarter-finals',CAREER.ko.qf,4)}${col('Semi-finals',CAREER.ko.sf,2)}${col('Final',CAREER.ko.f,1)}</div>${champ}`;
 }
 function findPlayer(id){
   if(!CAREER) return null;
