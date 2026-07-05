@@ -131,7 +131,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:16px 0}
 .ccard.picked{outline:3px solid var(--gold);outline-offset:-1px}
 .ccard.taken{opacity:.35;pointer-events:none}
 .ccard canvas{border-radius:6px;box-shadow:0 3px 10px rgba(0,0,0,.5)}
-.ccard b{font-size:18px;line-height:1.1}
+.ccard b{font-size:18px;line-height:1.1;color:#eef3ff}
 .stars{color:var(--gold);letter-spacing:2px;font-size:14px}
 .ccard .rt{font-size:13px;color:var(--dim)}
 
@@ -148,15 +148,47 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:16px 0}
 .chip.on{color:#221a05;background:var(--cyan);border-color:var(--cyan)}
 input[type=color]{width:52px;height:36px;border:none;background:none;padding:0;cursor:pointer}
 
-/* ---------- player cards ---------- */
-.pcard{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);
-  border-radius:12px;padding:14px;position:relative;transition:.12s}
-.pcard.sel{outline:3px solid var(--gold);outline-offset:-1px}
-.pcard:hover{transform:translateY(-2px)}
-.pcard .ph{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.pcard .ovr{font-family:var(--disp);font-size:26px;color:var(--gold);min-width:44px;text-align:center}
-.pcard .nm b{display:block;font-size:18px;line-height:1.05}
-.pcard .nm span{color:var(--dim);font-size:13px;letter-spacing:.1em;text-transform:uppercase}
+/* ---------- player cards (tiered rating cards) ---------- */
+.pcard{background:none;border:none;padding:0;position:relative;transition:transform .13s ease}
+.pcard:hover{transform:translateY(-4px)}
+.pcard.sel .fcard{outline:3px solid var(--cyan);outline-offset:2px;box-shadow:0 0 22px rgba(84,224,255,.5),0 12px 26px rgba(0,0,0,.45)}
+.pcard.taken{opacity:.4;filter:grayscale(.4)}
+.pcard.can-up .fcard{box-shadow:0 0 0 2px var(--ok),0 12px 26px rgba(0,0,0,.5)}
+.fcard{position:relative;width:100%;max-width:210px;margin:0 auto;aspect-ratio:.71;
+  border-radius:11px 11px 16px 16px;padding:13px 14px 10px;overflow:hidden;cursor:pointer;
+  color:#33260f;font-family:var(--cond);box-shadow:0 10px 26px rgba(0,0,0,.45);
+  display:flex;flex-direction:column}
+.fcard.bronze{background:linear-gradient(158deg,#e7a870,#b06e3f 52%,#7c4b28)}
+.fcard.silver{background:linear-gradient(158deg,#f2f6fb,#c2ccd7 52%,#909aa6)}
+.fcard.gold{background:linear-gradient(158deg,#ffe9a6,#e9c85f 50%,#b78a2f)}
+.fcard.elite{background:linear-gradient(158deg,#4a3f30,#241f19 55%,#0f0d0b);color:#ffe6a6}
+.fcard .fc-shine{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(118deg,transparent 38%,rgba(255,255,255,.4) 50%,transparent 62%);opacity:.5}
+.fcard::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 0 0 1px rgba(0,0,0,.15)}
+.fc-top{display:flex;gap:9px;align-items:flex-start;position:relative;z-index:1}
+.fc-lc{display:flex;flex-direction:column;align-items:center;gap:2px;width:42px;flex:none}
+.fc-ovr{font-family:var(--disp);font-size:30px;line-height:.86}
+.fc-pos{font-weight:800;font-size:12px;letter-spacing:.05em}
+.fc-lc .fc-flag{width:32px;height:21px;border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.4);margin-top:2px}
+.fc-lc .fc-badge{font-size:15px;margin-top:1px;line-height:1}
+.fc-portrait{flex:1;display:flex;justify-content:center;align-items:flex-start;min-width:0}
+.fc-portrait svg{width:90px;height:90px;filter:drop-shadow(0 3px 5px rgba(0,0,0,.3))}
+.fc-name{text-align:center;font-family:var(--disp);font-size:clamp(13px,4.6vw,17px);text-transform:uppercase;
+  letter-spacing:.01em;border-bottom:2px solid rgba(0,0,0,.28);padding-bottom:5px;margin:2px 4px 7px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;z-index:1}
+.fcard.elite .fc-name{border-color:rgba(255,230,166,.4)}
+.fc-stats{display:grid;grid-template-columns:1fr 1fr;gap:3px 16px;font-weight:700;font-size:14px;
+  padding:0 6px 2px;position:relative;z-index:1}
+.fc-stats span{display:flex;gap:7px;align-items:baseline}
+.fc-stats b{font-family:var(--disp);font-weight:400;min-width:22px;text-align:right;font-size:15px}
+.fc-stats i{font-style:normal;opacity:.8;font-size:12px;letter-spacing:.05em}
+.fc-price{position:absolute;top:-4px;right:-4px;z-index:4;background:linear-gradient(#ff5b52,#e8342a);color:#fff;
+  font-family:var(--cond);font-weight:800;font-size:12px;padding:3px 9px;border-radius:999px;
+  border:2px solid rgba(255,255,255,.9);box-shadow:0 4px 12px rgba(230,50,40,.5)}
+.fc-info{position:absolute;top:7px;right:8px;z-index:4;width:20px;height:20px;border-radius:50%;
+  background:rgba(0,0,0,.28);color:#fff;border:none;font-weight:800;font-size:12px;line-height:20px;cursor:pointer}
+.fc-actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-top:8px}
 .srow{display:flex;align-items:center;gap:8px;font-size:14px;margin:3px 0}
 .srow .k{width:34px;color:var(--dim);font-weight:700;letter-spacing:.05em}
 .srow .v{width:26px;text-align:right;font-weight:700}
@@ -370,9 +402,44 @@ body.rm #menuBall,body.rm .ball-shadow{animation:none}
   .menu-btns{margin:0 auto}
   .menu-tag{margin-left:auto;margin-right:auto}
 }
+
+/* ---------- slam transition (two shutters meet with a bang) ---------- */
+#slam{position:fixed;inset:0;z-index:300;pointer-events:none;display:none}
+#slam.on{display:block}
+.slam-h{position:absolute;top:0;height:100%;width:54%;
+  background:linear-gradient(90deg,#0a1020,#141f3a 70%,#1a2748);
+  box-shadow:0 0 60px rgba(0,0,0,.7)}
+.slam-l{left:0;transform:translateX(-102%);clip-path:polygon(0 0,100% 0,86% 100%,0 100%);
+  border-right:4px solid var(--gold)}
+.slam-r{right:0;transform:translateX(102%);clip-path:polygon(14% 0,100% 0,100% 100%,0 100%);
+  border-left:4px solid var(--gold)}
+.slam-h::after{content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(115deg,rgba(255,255,255,.03) 0 3px,transparent 3px 90px)}
+.slam-seam{position:absolute;top:0;left:50%;width:6px;height:100%;transform:translateX(-50%);
+  background:linear-gradient(var(--gold),#fff,var(--gold));opacity:0;filter:blur(3px)}
+#slam.slammed .slam-seam{opacity:1;animation:seamFlash .28s ease-out}
+@keyframes seamFlash{0%{opacity:1;width:22px}100%{opacity:0;width:6px}}
+body.rm #slam{display:none!important}
+
+/* ---------- shared UI polish: glossier buttons, richer panels, ambient bg ---------- */
+.btn{background:linear-gradient(180deg,#1b2748,#131d38);box-shadow:0 6px 18px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06)}
+.btn:hover{border-color:rgba(255,255,255,.32);box-shadow:0 12px 28px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.09)}
+.btn-gold{box-shadow:0 10px 28px rgba(232,167,28,.4),inset 0 1px 0 rgba(255,255,255,.5)}
+.panel,.ticket{box-shadow:0 12px 30px rgba(0,0,0,.32)}
+.sec{background:linear-gradient(180deg,#fff,#c9d6f5);-webkit-background-clip:text;background-clip:text;color:transparent}
+#bg-fx{position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(1100px 600px at 12% -8%, rgba(84,224,255,.10), transparent 60%),
+    radial-gradient(1000px 560px at 88% 108%, rgba(255,207,92,.09), transparent 60%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.014) 0 2px, transparent 2px 92px);
+  animation:bgDrift 18s ease-in-out infinite alternate}
+@keyframes bgDrift{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(-12deg)}}
+body.rm #bg-fx{animation:none}
+#screen-match ~ #bg-fx{display:none}
 </style>
 </head>
 <body>
+<div id="bg-fx" aria-hidden="true"></div>
 
 <!-- ================= MAIN MENU ================= -->
 <section class="screen" id="screen-menu">
@@ -758,6 +825,17 @@ body.rm #menuBall,body.rm .ball-shadow{animation:none}
     <div class="btnrow mt"><button class="btn btn-gold" id="tm-close">Close</button></div>
   </div>
 </div>
+
+<!-- ================= PLAYER DETAIL MODAL ================= -->
+<div class="modal-bg" id="player-modal-bg">
+  <div class="modal" style="max-width:640px">
+    <div id="pl-body"></div>
+    <div class="btnrow mt"><button class="btn btn-gold" id="pl-close">Close</button></div>
+  </div>
+</div>
+
+<!-- ================= SLAM TRANSITION ================= -->
+<div id="slam" aria-hidden="true"><div class="slam-h slam-l"></div><div class="slam-h slam-r"></div><div class="slam-seam"></div></div>
 
 <!-- ================= FORMATION EDITOR MODAL ================= -->
 <div class="modal-bg" id="tactics-modal-bg">
@@ -1279,11 +1357,11 @@ function genPlayer(role, target, pool, style){
   /* nudge stats toward the team's identity so a possession side really has better passers etc. */
   if(style && role!=='GK'){
     const b=(v)=> Math.round((v-0.55)*12);
-    st.pas=clamp(st.pas+b(style.poss)+b(style.ment)*0.4, 20,97);
-    st.ctl=clamp(st.ctl+b(style.flair)+b(style.poss)*0.5, 20,97);
-    st.pac=clamp(st.pac+b(style.pace), 20,97);
-    st.def=clamp(st.def+b(style.def)*(role==='DEF'?1.2:0.6)+b(style.phys)*0.5, 12,97);
-    if(role==='ATT'){ st.sho=clamp(st.sho+b(style.flair)*0.5+b(style.pace)*0.4, 20,97); }
+    st.pas=clamp(Math.round(st.pas+b(style.poss)+b(style.ment)*0.4), 20,97);
+    st.ctl=clamp(Math.round(st.ctl+b(style.flair)+b(style.poss)*0.5), 20,97);
+    st.pac=clamp(Math.round(st.pac+b(style.pace)), 20,97);
+    st.def=clamp(Math.round(st.def+b(style.def)*(role==='DEF'?1.2:0.6)+b(style.phys)*0.5), 12,97);
+    if(role==='ATT'){ st.sho=clamp(Math.round(st.sho+b(style.flair)*0.5+b(style.pace)*0.4), 20,97); }
   }
   const p={ id:uid(), name:genName(pool), role, lvl:1, xp:0, sp:0, con:rint(1,3), st, starter:false,
     career:{apps:0,goals:0,assists:0,tackles:0,saves:0,motm:0} };
@@ -1749,12 +1827,13 @@ function seasonEndScreen(){
       <p class="sub">Run: <b style="color:var(--ink)">${esc(h.run||'—')}</b> · Career: ${h.stats.cups}🏆 · ${h.stats.wins}W · ${h.stats.goals} goals</p>
       <hr class="rule">
       <p class="sub" style="font-size:15px"><b style="color:var(--ink)">Contracts running out — renew now (pay) or let them walk free:</b></p>
-      ${ exp.length ? `<div class="grid g3">${exp.map(p=>`<div class="pcard">${pcardHTML(p,{renew:true,rename:false})}</div>`).join('')}</div>`
+      ${ exp.length ? `<div class="grid g3">${exp.map(p=>`<div class="pcard">${pcardHTML(p,{renew:true,flag:t.flag})}</div>`).join('')}</div>`
         : '<p class="sub">No expiring contracts — the whole squad stays.</p>' }
       <p class="sub" style="font-size:14px;margin-top:8px">Un-renewed players leave next cycle; you'll get a rebuild draft (plus a $60M cycle stipend) to replace them.</p>
     </div>`;
   });
   $('se-body').innerHTML = html;
+  wireCards($('se-body'));
   $('se-next').textContent = `Start the ${CAREER.year+4} cycle →`;
   $('se-body').querySelectorAll('[data-rnw]').forEach(b=> b.addEventListener('click',e=>{
     e.stopPropagation();
@@ -1795,7 +1874,7 @@ function nextSeason(){
       title:`${d.team.name} — rebuild your squad`,
       sub:`${d.gone.map(p=>esc(p.name)).join(', ')} left on free transfers. Budget $${d.human.budget||0}M — sign at least ${d.count} replacement${d.count>1?'s':''} within budget.`,
       pool: makeDraftPool(Math.max(16, d.count*4), 58 + CAREER.season*2, d.team.pool||'mix', style),
-      budget: d.human.budget||0, minPick: d.count, needGK: !d.team.players.some(p=>p.role==='GK'),
+      budget: d.human.budget||0, minPick: d.count, needGK: !d.team.players.some(p=>p.role==='GK'), flag:d.team.flag,
       onDone: (picked, leftover)=>{ d.team.players.push(...picked); d.human.budget=leftover; autoStarters(d.team.players); doDrafts(i+1); }
     });
   };
@@ -1828,6 +1907,28 @@ function go(id){
   if(cur && cur.id!==id) PREV_SCREEN = cur.id;
   document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active', s.id===id));
   window.scrollTo(0,0);
+}
+/* two shutters slam shut, swap the screen behind them, then fling open */
+function slamShut(cb){
+  const s=$('slam');
+  if(SET.rm || !s){ if(cb) cb(); return; }
+  const l=s.querySelector('.slam-l'), r=s.querySelector('.slam-r');
+  s.classList.add('on'); s.classList.remove('slammed');
+  l.style.transition='none'; r.style.transition='none';
+  l.style.transform='translateX(-102%)'; r.style.transform='translateX(102%)';
+  void s.offsetWidth;
+  l.style.transition=r.style.transition='transform .30s cubic-bezier(.66,0,.85,.35)';
+  l.style.transform='translateX(0)'; r.style.transform='translateX(0)';
+  setTimeout(()=>{
+    s.classList.add('slammed'); AUDIO.whistle2 && AUDIO.whistle2();
+    if(cb) cb();
+    setTimeout(()=>{
+      s.classList.remove('slammed');
+      l.style.transition=r.style.transition='transform .42s cubic-bezier(.2,.7,.3,1)';
+      l.style.transform='translateX(-102%)'; r.style.transform='translateX(102%)';
+      setTimeout(()=>s.classList.remove('on'), 440);
+    }, 300);
+  }, 320);
 }
 function refreshMenu(){
   const has = !!DB.get('career', null);
@@ -2006,7 +2107,7 @@ function renderDraftPool(){
     el.className='pcard'+(picked?' sel':'')+(!affordable?' taken':'');
     el.style.cursor='pointer';
     el.setAttribute('role','button'); el.tabIndex=0;
-    el.innerHTML = pcardHTML(p,{cost:true});
+    el.innerHTML = pcardHTML(p,{cost:true, flag:DRAFT.flag});
     const toggle=()=>{
       if(DRAFT.picked.has(p.id)) DRAFT.picked.delete(p.id);
       else if(DRAFT.cap){ if(draftSpent()+playerCost(p)<=DRAFT.budget) DRAFT.picked.add(p.id); else { AUDIO.click(); return; } }
@@ -2017,6 +2118,7 @@ function renderDraftPool(){
     el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
     box.appendChild(el);
   });
+  wireCards(box);   /* ⓘ opens details; card body toggles selection */
   const n=DRAFT.picked.size;
   const picked = DRAFT.pool.filter(p=>DRAFT.picked.has(p.id));
   const okGK = !DRAFT.needGK || picked.some(p=>p.role==='GK');
@@ -2040,7 +2142,7 @@ function startInitialDraft(h, countryRating, base){
     title:`${base.name} — build your squad`,
     sub:`Step 3 of 3 · Transfer budget: $${budget}M. Sign at least 11 players (incl. a goalkeeper) within budget — splurge on stars or spread it thin. Leftover money carries into your career for renewals & signings. Costs rise steeply with rating.`,
     pool: makeDraftPool(30, target, base.pool, style),
-    budget, minPick:11, needGK:true,
+    budget, minPick:11, needGK:true, flag:base.flag,
     onDone: (picked, leftover)=>{
       const team = { id:uid(), name:base.name, flag:base.flag, c1:base.c1, c2:base.c2,
         pool:base.pool, human:h.name, players:picked, hist:[], style };
@@ -2055,30 +2157,95 @@ function startInitialDraft(h, countryRating, base){
 
 /* ----- player card html ----- */
 function statBar(p,k,editable){
-  const v=p.st[k];
+  const v=Math.round(p.st[k]);
   return `<div class="srow"><span class="k">${STATNAMES[k]}</span>
     <div class="bar"><div class="fill" style="width:${v}%"></div></div>
     <span class="v">${v}</span>${editable ? `<button class="plus" data-p="${p.id}" data-k="${k}" aria-label="Improve ${STATNAMES[k]} for ${esc(p.name)}">+</button>`:''}</div>`;
 }
+/* ---- tiered rating card ---- */
+function posOf(p){
+  const s=p.st;
+  if(p.role==='GK') return 'GK';
+  if(p.role==='DEF') return s.pac>=79?'RB':'CB';
+  if(p.role==='MID') return s.def>=76?'CDM': s.sho>=79?'CAM':'CM';
+  return s.pac>=84?'LW': s.sho>=86?'ST':'CF';
+}
+function phyOf(p){ return clamp(Math.round(p.st.def*0.42 + p.st.pac*0.24 + 32),30,99); }
+function tierOf(o){ return o>=85?'elite': o>=78?'gold': o>=68?'silver':'bronze'; }
+function lastName(n){ const a=String(n).trim().split(/\s+/); return a.length>1?a.slice(1).join(' '):a[0]; }
+const ROLE_EMOJI={GK:'🧤',DEF:'🛡️',MID:'🎯',ATT:'⚽'};
+function avatarSVG(p){
+  const skin=skinFor(p.name), hair=hairFor(p.name);
+  return `<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="94" rx="35" ry="20" fill="${skin}"/>`+
+    `<circle cx="50" cy="49" r="26" fill="${skin}"/>`+
+    `<path d="M23 47 Q25 20 50 20 Q75 20 77 47 Q70 34 50 34 Q30 34 23 47Z" fill="${hair}"/>`+
+    `<path d="M37 49 Q41 44 45 49" stroke="#20140a" stroke-width="3" fill="none" stroke-linecap="round"/>`+
+    `<path d="M55 49 Q59 44 63 49" stroke="#20140a" stroke-width="3" fill="none" stroke-linecap="round"/>`+
+    `<path d="M42 60 Q50 67 58 60" stroke="#20140a" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+}
+function fifaCard(p, o={}){
+  const ovr=overall(p), tier=tierOf(ovr), st=p.st;
+  const L = p.role==='GK'
+    ? [['PAC',st.pac],['GK',st.gk],['PAS',st.pas],['DRI',st.ctl],['DEF',st.def],['PHY',phyOf(p)]]
+    : [['PAC',st.pac],['SHO',st.sho],['PAS',st.pas],['DRI',st.ctl],['DEF',st.def],['PHY',phyOf(p)]];
+  const rows=[[L[0],L[3]],[L[1],L[4]],[L[2],L[5]]];
+  const stats=rows.map(([a,b])=>`<span><b>${Math.round(a[1])}</b><i>${a[0]}</i></span><span><b>${Math.round(b[1])}</b><i>${b[0]}</i></span>`).join('');
+  const price = o.cost ? `<div class="fc-price">$${playerCost(p)}M</div>` : '';
+  const flag = o.flag ? `<span class="fc-flag">${flagIMG(o.flag,32,21)}</span>` : '';
+  return `<div class="fcard ${tier}" data-pid="${p.id}">
+    <div class="fc-shine"></div>${price}<button class="fc-info" data-info="${p.id}" title="Details">i</button>
+    <div class="fc-top"><div class="fc-lc"><div class="fc-ovr">${ovr}</div><div class="fc-pos">${posOf(p)}</div>${flag}<div class="fc-badge">${ROLE_EMOJI[p.role]||''}</div></div>
+    <div class="fc-portrait">${avatarSVG(p)}</div></div>
+    <div class="fc-name">${esc(lastName(p.name))}</div>
+    <div class="fc-stats">${stats}</div></div>`;
+}
 function pcardHTML(p, o={}){
-  const keys = p.role==='GK' ? ['gk','def','pas','ctl','pac','sho'] : ['pac','sho','pas','def','ctl','gk'];
-  const costTag = o.cost ? `<div class="ovr" style="font-size:16px;color:var(--ok);min-width:0;margin-left:auto">$${playerCost(p)}M</div>` : '';
-  let s=`<div class="ph"><div class="ovr">${overall(p)}</div><div class="nm"><b>${esc(p.name)}</b><span>${p.role} · ${esc(p.trait||p.role)}${o.cost?'':' · Lv '+p.lvl}</span></div>${costTag}</div>`;
-  s += keys.map(k=>statBar(p,k,o.editable&&p.sp>0)).join('');
-  if(o.xp) s += `<div class="srow"><span class="k">XP</span><div class="bar xp"><div class="fill" style="width:${clamp(Math.round(p.xp/xpNeed(p)*100),0,100)}%"></div></div><span class="v">${p.xp}/${xpNeed(p)}</span></div>`;
-  s += `<div class="tagrow">`;
-  if(o.starter) s += `<button class="mini ${p.starter?'st':'stoff'}" data-st="${p.id}">${p.starter?'★ Starter':'Bench · tap to start'}</button>`;
-  if(o.rename) s += `<button class="mini stoff" data-rn="${p.id}" title="Rename this player">✎ Rename</button>`;
-  if(o.release) s += `<button class="mini warn" data-rel="${p.id}" title="Release for $${releaseValue(p)}M">✖ Release</button>`;
-  if(o.renew) s += `<button class="mini ok" data-rnw="${p.id}" title="Renew contract">↻ Renew $${renewCost(p)}M</button>`;
-  if(o.starterBadge) s += p.starter ? '<span class="mini st">Starter</span>' : '<span class="mini">Bench</span>';
-  if(p.career && p.career.apps) s += `<span class="mini">${p.career.apps} apps · ${p.career.goals}G ${p.career.assists}A</span>`;
-  s += `<span class="mini ${p.con<=1?'warn':''}">${p.con} WC contract${p.con>1?'s':''}</span>`;
-  if(o.editable && p.sp>0) s += `<span class="mini ok">${p.sp} skill pt${p.sp>1?'s':''} — tap +</span>`;
-  s += `</div>`;
+  let s = fifaCard(p, o);
+  const a=[];
+  if(o.starter) a.push(`<button class="mini ${p.starter?'st':'stoff'}" data-st="${p.id}">${p.starter?'★ XI':'Bench'}</button>`);
+  if(o.rename) a.push(`<button class="mini stoff" data-rn="${p.id}">✎</button>`);
+  if(o.release) a.push(`<button class="mini warn" data-rel="${p.id}">✖ $${releaseValue(p)}M</button>`);
+  if(o.renew) a.push(`<button class="mini ok" data-rnw="${p.id}">↻ $${renewCost(p)}M</button>`);
+  if(o.starterBadge) a.push(p.starter ? '<span class="mini st">XI</span>' : '<span class="mini">Bench</span>');
+  if(o.editable && p.sp>0) a.push(`<span class="mini ok">${p.sp} SP · tap card</span>`);
+  if(a.length) s += `<div class="fc-actions">${a.join('')}</div>`;
   return s;
 }
 function releaseValue(p){ return Math.max(1, Math.round(playerCost(p)*0.4)); }
+/* ---- player detail modal ---- */
+function resolvePlayer(pid){
+  if(DRAFT && DRAFT.pool){ const q=DRAFT.pool.find(p=>p.id===pid); if(q) return {p:q, editable:false}; }
+  const mine=findPlayer(pid); if(mine) return {p:mine, editable:true};
+  if(CAREER){ for(const t of Object.values(CAREER.teams)){ const q=t.players.find(p=>p.id===pid); if(q) return {p:q, editable:false, team:t}; } }
+  return null;
+}
+function openPlayerModal(pid){
+  const r=resolvePlayer(pid); if(!r) return; const p=r.p;
+  const keys = p.role==='GK' ? ['gk','def','pas','ctl','pac','sho'] : ['pac','sho','pas','def','ctl','gk'];
+  const c=p.career||{};
+  let html=`<div style="display:grid;grid-template-columns:minmax(150px,190px) 1fr;gap:20px;align-items:start">
+    <div>${fifaCard(p,{})}</div>
+    <div>
+      <div class="row" style="justify-content:space-between"><h2 class="sec" style="font-size:24px;margin:0">${esc(p.name)}</h2><span class="badge gold">${overall(p)} OVR</span></div>
+      <p class="sub" style="margin:2px 0 10px">${posOf(p)} · <b style="color:var(--ink)">${esc(p.trait||'')}</b> · Lv ${p.lvl} · ${p.con} WC contract${p.con>1?'s':''} · value $${playerCost(p)}M</p>
+      ${keys.map(k=>statBar(p,k,r.editable&&p.sp>0)).join('')}
+      <div class="srow"><span class="k">XP</span><div class="bar xp"><div class="fill" style="width:${clamp(Math.round(p.xp/xpNeed(p)*100),0,100)}%"></div></div><span class="v">${p.xp}/${xpNeed(p)}</span></div>
+      ${r.editable&&p.sp>0?`<p class="sub ok" style="color:var(--ok);font-size:14px">${p.sp} skill point${p.sp>1?'s':''} — tap a stat's + to spend.</p>`:''}
+      <hr class="rule">
+      <p class="sub" style="font-size:15px"><b style="color:var(--ink)">Career:</b> ${c.apps||0} apps · ${c.goals||0} goals · ${c.assists||0} assists · ${c.tackles||0} tackles${p.role==='GK'?' · '+(c.saves||0)+' saves':''} · ${c.motm||0} ⭐ MOTM</p>
+    </div></div>`;
+  $('pl-body').innerHTML=html;
+  $('pl-body').querySelectorAll('.plus').forEach(b=> b.addEventListener('click',e=>{
+    e.stopPropagation(); const pp=findPlayer(b.dataset.p); if(!pp||pp.sp<=0) return;
+    pp.st[b.dataset.k]=clamp(pp.st[b.dataset.k]+1,1,99); pp.sp--; AUDIO.level(); saveCareer(); openPlayerModal(pid); renderSquad&&renderSquad(); renderOverview&&renderOverview();
+  }));
+  $('player-modal-bg').classList.add('show');
+}
+function wireCards(container, opts){
+  opts=opts||{};
+  container.querySelectorAll('[data-info]').forEach(b=> b.addEventListener('click', e=>{ e.stopPropagation(); AUDIO.click(); openPlayerModal(b.dataset.info); }));
+  if(opts.details) container.querySelectorAll('.fcard[data-pid]').forEach(cd=> cd.addEventListener('click', ()=>{ AUDIO.click(); openPlayerModal(cd.dataset.pid); }));
+}
 
 /* ================================================================
    8. HUB
@@ -2242,7 +2409,7 @@ function renderSquad(){
       <span class="mini">11 starters (1 GK + 10 outfield) · tap to promote/bench · release for cash · <b style="color:var(--gold);cursor:pointer" data-tactics="${h.teamId}">✎ Edit formation</b></span>
       <div class="grid g3" style="margin-top:10px">`;
     t.players.slice().sort((a,b)=> (b.starter?1:0)-(a.starter?1:0) || overall(b)-overall(a)).forEach(p=>{
-      html+=`<div class="pcard ${p.sp>0?'can-up':''}">${pcardHTML(p,{editable:true,xp:true,starter:true,rename:true,release:true})}</div>`;
+      html+=`<div class="pcard ${p.sp>0?'can-up':''}">${pcardHTML(p,{editable:true,starter:true,rename:true,release:true,flag:t.flag})}</div>`;
     });
     html+='</div></div>';
   });
@@ -2279,6 +2446,7 @@ function renderSquad(){
     t.players=t.players.filter(x=>x.id!==p.id);
     autofixStarters(t); AUDIO.click(); saveCareer(); renderSquad(); renderOverview();
   }));
+  wireCards(el, {details:true});
 }
 function renderTeams(){
   const el=$('tab-teams');
@@ -2297,7 +2465,8 @@ function openTeamModal(id){
   $('tm-head').innerHTML=`<div class="row" style="flex-wrap:nowrap">${flagIMG(t.flag,52,35)}<div><b style="font-size:22px">${esc(t.name)}</b><br><span class="sub">Team OVR ${teamRating(t)} · ${t.human?('Managed by '+esc(t.human)):'AI nation'}${t.style?' · '+esc(t.style.tag):''}</span></div></div><span class="badge gold">${CAREER.year}</span>`;
   if(t.style){ $('tm-head').innerHTML += `<div style="flex-basis:100%;display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">${STYLE_KEYS.map(k=>`<span class="mini">${STYLE_LABEL[k]} ${Math.round(t.style[k]*100)}</span>`).join('')}</div>`; }
   $('tm-roster').innerHTML = t.players.slice().sort((a,b)=>(b.starter?1:0)-(a.starter?1:0)||overall(b)-overall(a))
-    .map(p=>`<div class="pcard">${pcardHTML(p,{starterBadge:true})}</div>`).join('');
+    .map(p=>`<div class="pcard">${pcardHTML(p,{starterBadge:true,flag:t.flag})}</div>`).join('');
+  wireCards($('tm-roster'), {details:true});
   $('team-modal-bg').classList.add('show');
 }
 function renderBoardInto(el){
@@ -2785,6 +2954,8 @@ function onKeyPress(code){
   if(M.pk && (M.pk.turn!==team || ctrlEnt(team)!==M.pk.shooter || action==='pass')) return;
   const e=ctrlEnt(team); if(!e) return;
   const hasBall = M.ball.owner===e;
+  /* a human-controlled keeper without the ball dives/lunges to make a save */
+  if(e.gk && !hasBall && (action==='kick'||action==='lob')){ humanKeeperDive(e); return; }
   /* taking a throw-in: any action becomes a hand throw */
   if(M.mustThrow && e===M.mustThrow && hasBall){ doThrow(e); return; }
   if(action==='pass'){
@@ -2892,7 +3063,12 @@ function doPass(e, forced){
     a=Math.atan2(ty-e.y, tx-e.x);
     sp=clamp(300 + dist(e.x,e.y,tx,ty)*0.9 + e.pl.st.pas*1.4, 320, 760);
   } else { a=aimDir(e); sp=380+e.pl.st.pas*1.6; }
-  const err=(1-e.pl.st.pas/110)*0.14;
+  /* AI passers are far more accurate the more composed (higher-rated) the side is,
+     so they rarely gift the ball to an opponent */
+  const humanCtrl = M.human[e.team] && ctrlEnt(e.team)===e;
+  const aiT=M.aiFor&&M.aiFor[e.team];
+  const acc = humanCtrl ? 1 : (1 - (aiT?aiT.ment:0.6)*0.6);
+  const err=(1-e.pl.st.pas/110)*0.14*acc;
   a+=rand(-err,err);
   releaseBall(e, Math.cos(a)*sp, Math.sin(a)*sp, 0, AUDIO.pass);
 }
@@ -2904,6 +3080,10 @@ function doShotAt(e, power, a, curl){
   const lift = (26+power*36)*Math.min(1, power*3.2)*(curl?0.6:1);   /* curlers stay flatter */
   releaseBall(e, Math.cos(a)*sp, Math.sin(a)*sp, lift, AUDIO.kick, false);
   if(curl) M.ball.curl=curl;
+  /* shots burn stamina by power² — a light touch is ~free, a rocket costs a lot;
+     curled shots cost ~1.75× the energy of a straight one */
+  const cost = power*power*0.30*(curl?1.75:1);
+  e.stam = clamp(e.stam - cost, 0.05, 1);
   rate(e,'shot');
   M.shake=Math.min(6, power*6);
 }
@@ -2959,6 +3139,15 @@ function doThrow(e){
     sp=clamp(320+dist(e.x,e.y,tgt.x,tgt.y)*0.95, 340, 620); e.face=a; }
   else { a=Math.atan2(0, M.dir[e.team]); sp=440; }
   releaseBall(e, Math.cos(a)*sp, Math.sin(a)*sp, 8, AUDIO.pass);
+}
+/* a human-controlled keeper throwing themselves at the ball — extends reach to catch/parry */
+function humanKeeperDive(e){
+  if(e.diveT>0 || e.stun>0) return;
+  const a = mouseAimActive(e) ? angleToMouse(e) : Math.atan2(M.ball.y-e.y, M.ball.x-e.x);
+  e.diveT=0.6; e.diveDir=Math.sin(a)>=0?1:-1;
+  const sp=440; e.vx+=Math.cos(a)*sp; e.vy+=Math.sin(a)*sp;
+  e.stam=clamp(e.stam-0.12,0.06,1);
+  AUDIO.save && AUDIO.save();
 }
 /* keeper punt — a long, high downfield clearance */
 function doGkKick(e,power){
@@ -3028,23 +3217,41 @@ function setPiece(type, team, x, y, label){
 }
 function execRestart(){
   const r=M.restart; M.restart=null;
+  const d=M.dir[r.team];
   let taker;
   if(r.type==='goalkick'){
     taker=teamEnts(r.team).find(e=>e.gk)||teamEnts(r.team)[0];
     taker.x=r.x; taker.y=r.y;
+  } else if(r.type==='freekick'){
+    /* the free-kick specialist steps up behind the ball, facing goal */
+    taker=teamEnts(r.team).filter(e=>!e.gk).sort((a,b)=>(b.pl.st.sho+b.pl.st.pas)-(a.pl.st.sho+a.pl.st.pas))[0]||teamEnts(r.team)[0];
+    taker.x=r.x - d*38; taker.y=r.y; taker.vx=taker.vy=0;
   } else {
     taker=teamEnts(r.team).filter(e=>!e.gk).sort((a,b)=>dist(a.x,a.y,r.x,r.y)-dist(b.x,b.y,r.x,r.y))[0]||teamEnts(r.team)[0];
-    taker.x=r.x - M.dir[r.team]*6; taker.y=r.y;
+    taker.x=r.x - d*6; taker.y=r.y;
   }
   giveBall(taker);
-  taker.face=Math.atan2(FH/2-taker.y, (M.dir[r.team]===1?FW*0.75:FW*0.25)-taker.x);
+  taker.face=Math.atan2(FH/2-taker.y, (d===1?FW*0.75:FW*0.25)-taker.x);
   M.phase='play';
   if(r.type==='throwin'){
-    /* a real throw-in: taken by hand. AI delivers it to a teammate; a human throws it
-       themselves (their kick/pass becomes a flat throw until it's released) */
     taker.throwPose=0.7;
     if(M.human[r.team]) M.mustThrow=taker;
     else doThrow(taker);
+  } else if(r.type==='freekick'){
+    const atk=r.team, def=1-atk, gx=d===1?FW:0, gy=FH/2;
+    taker.face=Math.atan2(gy-taker.y, gx-taker.x);
+    /* line up a defensive wall ~10 yards from the ball, between it and goal */
+    const toGoal=Math.atan2(gy-r.y, gx-r.x), perp=toGoal+Math.PI/2, wallDist=190;
+    const wx=r.x+Math.cos(toGoal)*wallDist, wy=r.y+Math.sin(toGoal)*wallDist;
+    const dgoal=dist(r.x,r.y,gx,gy);
+    const nWall = dgoal<620?4 : dgoal<1000?3 : 2;
+    teamEnts(def).filter(e=>!e.gk).sort((a,b)=>dist(a.x,a.y,wx,wy)-dist(b.x,b.y,wx,wy)).slice(0,nWall)
+      .forEach((e,i)=>{ const off=(i-(nWall-1)/2)*24;
+        e.wallX=clamp(wx+Math.cos(perp)*off,12,FW-12); e.wallY=clamp(wy+Math.sin(perp)*off,12,FH-12);
+        e.x=e.wallX; e.y=e.wallY; e.vx=e.vy=0; e.cd=0.5; e.wallT=1.6; });
+    /* defending human takes control of their keeper to try to save */
+    if(M.human[def] && !M.split){ const k=teamEnts(def).find(e=>e.gk); if(k){ M.ctrl[def]=M.ents.indexOf(k); M.lock[def]=null; } }
+    showBanner('FREE KICK', M.human[atk] ? 'Aim & shoot — bend it round the wall' : (M.human[def]?'Defend! You control the keeper':''));
   }
 }
 function outOfBounds(){
@@ -3103,7 +3310,7 @@ function goalScored(team){
   M.phase='cutscene';
   showBanner('GOOOAL!', `${scorer.pl.name}${og?' (og)':''} · ${min}'`);
   AUDIO.goal(); setTimeout(()=>AUDIO.cheer(),150);
-  M.shake=8;
+  M.shake=8; M.crowdCheer=2.6;
 }
 function spawnConfetti(team){
   if(SET.rm) return;
@@ -3159,6 +3366,8 @@ function aiUpdate(e, dt){
     if(ds>4) e.face=a;
   };
   if(e.gk){ gkUpdate(e,dt,seek,speed); return; }
+  /* hold the defensive wall on a free kick for a beat */
+  if(e.wallT>0 && e.wallX!=null){ seek(e.wallX, e.wallY, speed*0.7); return; }
   if(M.phase!=='play'){ /* drift to anchor during restarts */
     const [ax,ay]=anchor(e); seek(ax,ay,speed*0.7); return;
   }
@@ -3286,7 +3495,8 @@ function bestPassTargetAI(e){
     if(axl(o.x)>offLine && axl(o.x)>axl(M.ball.x) && axl(o.x)>FW/2) sc-=400;  /* offside */
     if(sc>bs){bs=sc;best=o;}
   });
-  return best;
+  /* if every option is heavily marked / a blind ball, don't force it — hold and dribble instead */
+  return bs > -90 ? best : null;
 }
 function anchor(e, attacking){
   const d=M.dir[e.team];
@@ -3333,12 +3543,15 @@ function gkUpdate(e,dt,seek,speed){
     const fast=Math.hypot(b.vx,b.vy)>700;
     if(!e.saveTried && dist(e.x,e.y,b.x,b.y) < reach && b.z<76 && e.cd<=0){
       e.saveTried=true;
-      if(Math.random() < 0.5+gkSkill*0.32-(fast?0.12:0)){
+      /* catch more often now; when caught the keeper holds it and can throw/kick out */
+      if(Math.random() < 0.62+gkSkill*0.3-(fast?0.14:0)){
         giveBall(e); AUDIO.save(); M.xp[e.pl.id]=(M.xp[e.pl.id]||0)+8; rate(e,'save');
         showBanner(e.diveT>0?'DIVING SAVE!':'SAVE!');
       } else {
-        b.vx*= -0.3; b.vy+=(e.diveDir||1)*rand(60,180); b.vz=rand(40,120); e.cd=0.55;
-        AUDIO.save(); rate(e,'save');
+        /* parried — the ball only pops a short way up & to the side, not launched downfield */
+        const sp=rand(90,180), ang=Math.atan2((e.diveDir||(Math.random()<0.5?1:-1))*rand(0.4,1.1), d);
+        b.vx=Math.cos(ang)*sp; b.vy=Math.sin(ang)*sp; b.vz=rand(130,210); e.cd=0.5;
+        AUDIO.save(); rate(e,'save'); showBanner('PARRIED!');
       }
     }
   } else if(b.owner===e){
@@ -3375,6 +3588,7 @@ function step(dt){
   const b=M.ball;
   if(M.banner){ M.banner.t+=dt; if(M.banner.t>M.banner.dur) M.banner=null; }
   M.shake=Math.max(0,M.shake-dt*18);
+  M.crowdCheer=Math.max(0,(M.crowdCheer||0)-dt);
   /* particles */
   M.parts=M.parts.filter(p=>{
     p.life-=dt; p.x+=p.vx*dt; p.y+=p.vy*dt; p.z+=p.vz*dt; p.vz-=300*dt; p.rot+=p.vr*dt;
@@ -3522,6 +3736,7 @@ function integrate(e,dt){
   e.kick=Math.max(0,e.kick-dt*4);
   e.diveT=Math.max(0,(e.diveT||0)-dt);
   e.throwPose=Math.max(0,(e.throwPose||0)-dt);
+  e.wallT=Math.max(0,(e.wallT||0)-dt);
   if(e.stun>0){ e.vx*=Math.pow(0.01,dt); e.vy*=Math.pow(0.01,dt); }
   e.x=clamp(e.x+e.vx*dt, 6, FW-6);
   e.y=clamp(e.y+e.vy*dt, 6, FH-6);
@@ -3612,7 +3827,7 @@ function endMatch(){
     scorers:M.scorers, xp:M.xp, lvlups:[], forfeit:M.forfeit, forfeitHome:M.forfeitHome||false, motm, playerStats };
   const cb=M.ctx.onEnd;
   M=null;
-  cb(res);
+  slamShut(()=>cb(res));   /* two-shutter slam, then reveal the result screen */
 }
 /* which team conceded the most recent goal → they kick off */
 function lastScoringTeam(){
@@ -3822,53 +4037,53 @@ function drawMatch(){
 }
 /* ---------- stadium: tiered stands + crowd, baked once into an offscreen canvas ---------- */
 const STAND=280;   /* depth of stands around the pitch */
+const SHIRTS=['#e6e9f0','#d94f4f','#3f7fd6','#f0c341','#46b46e','#c85fbf','#e8843c','#ffffff','#8a93a6','#5ac2e0','#b23b3b','#2f5fb0'];
+/* build the stands as tiered seating filled with rows of little people */
 function buildStadium(){
-  const pad=STAND+40;
+  const pad=STAND+44;
   const W=FW+pad*2, H=FH+pad*2;
   const c=document.createElement('canvas'); c.width=W; c.height=H;
   const g=c.getContext('2d');
-  g.translate(pad,pad);                       /* origin = pitch corner */
-  /* outer bowl / concrete */
-  g.fillStyle='#141a24'; g.fillRect(-pad,-pad,W,H);
-  /* three concentric rings of seating around the pitch */
-  const rings=[[STAND,'#20293a'],[STAND*0.66,'#27334a'],[STAND*0.34,'#2e3c58']];
-  rings.forEach(([r,col])=>{
-    g.fillStyle=col;
-    g.fillRect(-r,-r,FW+2*r,r);              /* top */
-    g.fillRect(-r,FH,FW+2*r,r);              /* bottom */
-    g.fillRect(-r,0,r,FH);                   /* left */
-    g.fillRect(FW,0,r,FH);                   /* right */
-  });
-  /* crowd speckle — thousands of tiny coloured dots */
-  const crowd=['#e6e9f0','#c9d2e6','#f2c14e','#e2574c','#4d8fd6','#5bbb88','#d98cc2','#8f9bb3','#f0f0f0','#3fa66a'];
-  const seat=(x0,y0,x1,y1)=>{
-    for(let i=0;i<Math.abs((x1-x0)*(y1-y0))/26;i++){
-      g.fillStyle=crowd[(Math.random()*crowd.length)|0];
-      const px=x0+Math.random()*(x1-x0), py=y0+Math.random()*(y1-y0);
-      g.fillRect(px,py,2.4,2.4);
-    }
-  };
-  seat(-STAND,-STAND,FW+STAND,-6);           /* top bank */
-  seat(-STAND,FH+6,FW+STAND,FH+STAND);       /* bottom bank */
-  seat(-STAND,0,-6,FH);                      /* left bank */
-  seat(FW+6,0,FW+STAND,FH);                  /* right bank */
-  /* aisle lines + front wall */
-  g.strokeStyle='rgba(0,0,0,.35)'; g.lineWidth=3;
-  for(let i=1;i<3;i++){ const r=STAND*i/3;
-    g.strokeRect(-r,-r,FW+2*r,FH+2*r); }
+  g.translate(pad,pad);
+  g.fillStyle='#0d121c'; g.fillRect(-pad,-pad,W,H);
+  /* three tiers, brightening outward, with a step-shadow between each */
+  const tiers=[[STAND,'#1a2233'],[STAND*0.66,'#232e44'],[STAND*0.33,'#2d3a57']];
+  tiers.forEach(([r,col])=>{ g.fillStyle=col;
+    g.fillRect(-r,-r,FW+2*r,r); g.fillRect(-r,FH,FW+2*r,r); g.fillRect(-r,0,r,FH); g.fillRect(FW,0,r,FH); });
+  /* people: a dense grid of tiny spectators (head + shirt) across each bank */
+  const person=(px,py)=>{ g.fillStyle=SHIRTS[(Math.random()*SHIRTS.length)|0]; g.fillRect(px,py+1.5,3,3.1);
+    g.fillStyle='#2a1d13'; g.fillRect(px+0.6,py-0.6,1.9,1.9); };
+  const fill=(x0,y0,w,h)=>{ for(let py=y0;py<y0+h-2;py+=7){ const off=(Math.floor((py-y0)/7)%2)?3.5:0;
+    for(let px=x0+off;px<x0+w-2;px+=7) person(px,py); } };
+  fill(-STAND,-STAND, FW+2*STAND, STAND-8);   /* top */
+  fill(-STAND, FH+8,  FW+2*STAND, STAND-8);   /* bottom */
+  fill(-STAND, 6,     STAND-8,    FH-12);      /* left */
+  fill(FW+8,   6,     STAND-8,    FH-12);      /* right */
+  /* tier step lines + a dark shade near the pitch to seat the crowd */
+  g.strokeStyle='rgba(0,0,0,.4)'; g.lineWidth=3;
+  for(let i=1;i<3;i++){ const r=STAND*i/3; g.strokeRect(-r,-r,FW+2*r,FH+2*r); }
   /* advertising hoardings ringing the pitch */
   g.fillStyle='#0b1220';
-  g.fillRect(-14,-14,FW+28,14); g.fillRect(-14,FH,FW+28,14);
-  g.fillRect(-14,0,14,FH); g.fillRect(FW,0,14,FH);
+  g.fillRect(-14,-14,FW+28,14); g.fillRect(-14,FH,FW+28,14); g.fillRect(-14,0,14,FH); g.fillRect(FW,0,14,FH);
   const ads=['#e2574c','#4d8fd6','#f2c14e','#2e9e6b','#ffffff','#8f5bd6'];
   for(let x=0;x<FW;x+=90){ g.fillStyle=ads[(x/90)%ads.length|0]; g.fillRect(x+2,-12,84,9); g.fillRect(x+2,FH+3,84,9); }
-  /* corner floodlight glow patches on the grass edges */
   return c;
 }
 function drawStadium(g){
   if(!M.stadium) M.stadium=buildStadium();
-  const pad=STAND+40;
+  const pad=STAND+44;
   g.drawImage(M.stadium, -pad, -pad);
+  /* crowd cheering on a goal — a pulsing light wash over the stands */
+  if(M.crowdCheer>0){
+    const flick=0.5+0.5*Math.sin(Date.now()*0.02);
+    const a=clamp(M.crowdCheer,0,1)*(0.14+0.16*flick);
+    g.save(); g.globalCompositeOperation='screen'; g.fillStyle=`rgba(255,238,190,${a.toFixed(3)})`;
+    g.fillRect(-STAND,-STAND,FW+2*STAND,STAND);      /* top */
+    g.fillRect(-STAND,FH,FW+2*STAND,STAND);          /* bottom */
+    g.fillRect(-STAND,0,STAND,FH);                   /* left */
+    g.fillRect(FW,0,STAND,FH);                       /* right */
+    g.restore();
+  }
 }
 function drawPitch(g){
   /* mown stripes */
@@ -4534,6 +4749,8 @@ $('cs-custom').addEventListener('click',()=>{ AUDIO.click(); paintFlag(); go('sc
 $('se-next').addEventListener('click',()=>{ AUDIO.click(); nextSeason(); });
 $('tm-close').addEventListener('click',()=>{ AUDIO.click(); $('team-modal-bg').classList.remove('show'); });
 $('team-modal-bg').addEventListener('click',e=>{ if(e.target.id==='team-modal-bg') e.target.classList.remove('show'); });
+$('pl-close').addEventListener('click',()=>{ AUDIO.click(); $('player-modal-bg').classList.remove('show'); });
+$('player-modal-bg').addEventListener('click',e=>{ if(e.target.id==='player-modal-bg') e.target.classList.remove('show'); });
 
 $('pz-resume').addEventListener('click',()=>{ AUDIO.click(); togglePause(); });
 $('pz-toggle').addEventListener('click',()=>{ AUDIO.click(); showPauseMap($('pz-map').style.display==='none'); });
